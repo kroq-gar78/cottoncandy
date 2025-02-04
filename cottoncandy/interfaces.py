@@ -379,7 +379,7 @@ class BasicInterface(InterfaceObject):
                     self.upload_from_directory(flpath, obname,
                                                recursive=recursive,
                                                ExtraArgs=ExtraArgs)
-        print('Uploaded "%s" to "%s"'%(disk_path, cloud_path))
+        print('Uploaded "%s" to "%s"' % (disk_path, cloud_path))
 
     @clean_object_name
     def download_to_file(self, object_name, file_name):
@@ -655,9 +655,9 @@ class ArrayInterface(BasicInterface):
             compressor = numcodecs.get_codec(dict(id=compression.lower()))
             filestream = StringIO(compressor.encode(array))
             data_nbytes = get_fileobject_size(filestream)
-            print('Compressed to %0.2f%% the size'%(data_nbytes / float(orig_nbytes) * 100))
+            print('Compressed to %0.2f%% the size' % (data_nbytes / float(orig_nbytes) * 100))
         else:
-            raise ValueError('Unknown compression scheme: %s'%compression)
+            raise ValueError('Unknown compression scheme: %s' % compression)
         response = self.upload_object(object_name, filestream, acl=acl, **meta)
         return response
 
@@ -1074,8 +1074,8 @@ class FileSystemInterface(BasicInterface):
             object_names = self.lsdir(prefix, limit = limit)
         else:
             object_list = self.get_objects(filter = dict(Prefix = prefix),
-                                                  page_size = page_size,
-                                                  limit = limit)
+                                           page_size = page_size,
+                                           limit = limit)
             object_names = objects2names(object_list)
 
         # remove trailing '/'
