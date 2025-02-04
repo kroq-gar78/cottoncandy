@@ -10,7 +10,10 @@ on:
 
 jobs:
   run-tests:
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    # May require libssl fixes for ubuntu > 20.04
+    # (python executable from setup-python requires libssl.so.1.1, but only libssl.so.3 is in distro repos)
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version: [3.9, "3.10", "3.11", "3.12", "3.13"]
