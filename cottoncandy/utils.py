@@ -45,6 +45,7 @@ MANDATORY_BUCKET_PREFIX = options.config.get('basic', 'mandatory_bucket_prefix')
 
 ISBOTO_VERBOSE = options.config.get('login', 'verbose_boto')
 
+
 ##############################
 # misc functions
 ##############################
@@ -54,6 +55,7 @@ def sanitize_metadata(metadict):
     for key,val in metadict.items():
         outdict[key.lower()] = val
     return outdict
+
 
 def pathjoin(a, *p):
     """Join two or more pathname components, inserting SEPARATOR as needed.
@@ -69,6 +71,7 @@ def pathjoin(a, *p):
         else:
             path += SEPARATOR + b
     return path
+
 
 def string2bool(mstring):
     '''
@@ -287,11 +290,13 @@ def remove_root(string_):
 ##############################
 
 check_digits = re.compile('[0-9]')
+MAGIC_CHECK = re.compile('[*?[]')
+
 
 def has_start_digit(s):
     return check_digits.match(s) is not None
 
-MAGIC_CHECK = re.compile('[*?[]')
+
 
 def has_magic(s):
     '''Check string to see if it has any glob magic
@@ -462,6 +467,7 @@ def read_buffered(frm, to, buffersize=64):
             vw.data[start:end] = frm.read(end - start)
         else:
             raise("Unknown python version") # not sure six will ever do anything here (6=2x3)
+
 
 class GzipInputStream(object):
     """Simple class that allow streaming reads from GZip files
