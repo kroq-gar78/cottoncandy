@@ -112,7 +112,7 @@ def bytes2human(nbytes):
     exp_closest = int((exps[np.abs(exps - exp_coeff).argmin()]))
     if np.log10(nbytes/2.**exp_closest) < 0:
         exp_closest -= 10
-    return '%0.02f%s'%(nbytes/2.**exp_closest, mapper[exp_closest])
+    return '%0.02f%s' % (nbytes/2.**exp_closest, mapper[exp_closest])
 
 
 def get_object_size(boto_s3_object):
@@ -246,7 +246,7 @@ def print_objects(object_list):
         maxlen = max(map(len, object_names))
         dates = [t.last_modified.astimezone(tzlocal()).strftime('%Y/%m/%d (%H:%M:%S)')\
                  for t in object_list]
-        padding = '{0: <%i} {1} {2}M'%(min(maxlen+3, 70))
+        padding = '{0: <%i} {1} {2}M' % (min(maxlen+3, 70))
         sizes = [round(t.meta.data['Size']/2.**20,1) for t in object_list]
         info = [padding.format(name[-100:],date,size) for name,date,size in zip(object_names, dates, sizes)]
         print('\n'.join(info))
