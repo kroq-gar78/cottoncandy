@@ -1,13 +1,16 @@
 from abc import ABCMeta, abstractmethod
 
+
 class FileNotFoundError(RuntimeError):
     """File not found error"""
+
 
 class CCBackEnd(object):
     """
     Interface for cottoncandy backends
     """
     __metaclass__ = ABCMeta
+
     def __init__(self):
         pass
 
@@ -211,6 +214,7 @@ class CCBackEnd(object):
         int
         """
         pass
+
 
 class CloudStream(object):
     """
