@@ -162,9 +162,6 @@ class S3Directory(S3FSLike):
         '''
         return sorted(self.interface.glob(self._fullpath))
 
-    def __dir__(self):
-        return []
-
     def __repr__(self):
         if len(self._subdirs):
             details = (__package__, self.interface.bucket_name, self._curdir)
