@@ -44,7 +44,7 @@ from .utils import (pathjoin, clean_object_name, print_objects, get_fileobject_s
                     MAGIC_CHECK)
 from .options import config
 
-DO_COMPRESSION = config.get('compression', 'do_compression').lower() in ('true', 't', 'y','yes')
+DO_COMPRESSION = config.get('compression', 'do_compression').lower() in ('true', 't', 'y', 'yes')
 COMPRESSION_SMALL = config.get('compression', 'small_array')
 COMPRESSION_LARGE = config.get('compression', 'large_array')
 
@@ -62,7 +62,6 @@ try:
     import numcodecs
 except ImportError:
     warn('numcodecs python library not available')
-
 
 
 # ------------------
@@ -435,8 +434,6 @@ class BasicInterface(InterfaceObject):
                                                        permissions=acl,
                                                        verbose=verbose)
 
-
-
     @clean_object_name
     def upload_json(self, object_name, ddict, acl=DEFAULT_ACL, **metadata):
         """Upload a dict as a JSON using ``json.dumps``
@@ -495,6 +492,7 @@ class BasicInterface(InterfaceObject):
         self.exists_object(object_name, raise_err=True)
         obj = self.download_object(object_name)
         return pickle.loads(obj)
+
 
 class ArrayInterface(BasicInterface):
     """Provides numpy.array concepts.
@@ -610,7 +608,7 @@ class ArrayInterface(BasicInterface):
 
         order = 'C' if array.flags.carray else 'F'
         if ((not array.flags['%s_CONTIGUOUS' % order] and six.PY2) or
-            (not array.flags['C_CONTIGUOUS'] and six.PY3)):
+                (not array.flags['C_CONTIGUOUS'] and six.PY3)):
             warn('Non-contiguous array. Creating copy (will use extra memory)...')
 
             if six.PY3 and order == 'F':
@@ -798,8 +796,6 @@ class ArrayInterface(BasicInterface):
                 datadict[subdir] = arr
             else:
                 datadict[subdir] = self.cloud2dict(path)
-
-            
 
         if verbose:
             print('Downloaded arrays in "%s"' % object_root)

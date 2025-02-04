@@ -40,6 +40,7 @@ JSONEXT = ['.json']
 class BrowserObject(object):
     pass
 
+
 class S3FSLike(BrowserObject):
     '''Base class for file-system-like backend_interface to S3
     '''
