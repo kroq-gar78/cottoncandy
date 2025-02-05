@@ -15,12 +15,12 @@ def content_generator():
         for order in orders:
             for dtype in types:
                 data = np.random.randn(int(1 + size_mb * (2 ** 20) / 8))
-                data = np.asarray(data, order=order).astype(dtype)
+                data = np.asarray(data, order=order).astype(dtype)  # type: ignore
 
                 if kind == 'raw':
                     yield data
                 elif kind == 'slice':
-                    yield data[data.shape[0] / 2:]
+                    yield data[int(data.shape[0] / 2):]
                 elif kind == 'nonco':
                     yield data[np.random.randint(0, data.shape[0], 10)]
 

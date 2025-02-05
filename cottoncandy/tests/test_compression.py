@@ -17,7 +17,7 @@ def content_generator():
             for dtype in types:
                 nitems = int(np.ceil(np.sqrt(1 + size_mb * (2 ** 20) / 8)))
                 data = np.random.randn(nitems, nitems)
-                data = np.asarray(data, order=order, dtype=dtype)
+                data = np.asarray(data, order=order, dtype=dtype)  # type: ignore
 
                 if kind == 'nonco':
                     mask = np.random.randn(*data.shape) > 2

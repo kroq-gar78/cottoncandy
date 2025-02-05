@@ -1,4 +1,5 @@
 import time
+from typing import cast, get_args, Literal
 
 import numpy as np
 
@@ -16,7 +17,7 @@ def content_generator():
             for dtype in types:
                 print(kind, order, dtype)
                 data = np.random.randn(20, 10, 5)
-                data = np.asarray(data, order=order).astype(dtype)
+                data = np.asarray(data, order=order).astype(dtype)  # type: ignore
 
                 if kind == 'raw':
                     yield data
@@ -41,7 +42,7 @@ def test_upload_from_file(cci, object_name):
     assert dat == content
 
     # string roundtrip
-    content = 'abcdefg123457890'
+    content: str = 'abcdefg123457890'
     flname = '/tmp/test.txt'
     with open(flname, 'w') as fl:
         fl.write(content)
