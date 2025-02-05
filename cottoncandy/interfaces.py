@@ -1,6 +1,5 @@
 import json
 import six
-import glob
 
 try:
     import cPickle as pickle
@@ -11,11 +10,6 @@ try:
     from urllib import unquote
 except ImportError:
     from urllib.parse import unquote
-
-try:
-    reduce
-except NameError:
-    from functools import reduce
 
 import fnmatch
 from gzip import GzipFile
@@ -364,8 +358,6 @@ class BasicInterface(InterfaceObject):
                               recursive=False, ExtraArgs=dict(ACL=DEFAULT_ACL), threads = THREADS):
         '''Upload a directory to the cloud
         '''
-        from glob import glob
-
         filenames = sorted(os.listdir(disk_path))
         if cloud_path is None:
             cloud_path = disk_path

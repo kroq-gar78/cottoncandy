@@ -4,7 +4,6 @@
 from __future__ import absolute_import
 
 import os
-from base64 import b64decode
 
 from cottoncandy import options
 
