@@ -9,12 +9,14 @@ import urllib
 import itertools
 from dateutil.tz import tzlocal
 from functools import wraps
+from typing import Iterable, List, Optional, Tuple
 
 
 from urllib.parse import unquote
 
 
 import numpy as np
+import numpy.typing as npt
 
 from cottoncandy import options
 
@@ -54,7 +56,7 @@ def sanitize_metadata(metadict):
     return outdict
 
 
-def pathjoin(a, *p):
+def pathjoin(a: str, *p: str) -> str:
     """Join two or more pathname components, inserting SEPARATOR as needed.
     If any component is an absolute path, all previous path components
     will be discarded.  An empty last part will result in a path that
@@ -70,10 +72,10 @@ def pathjoin(a, *p):
     return path
 
 
-def string2bool(mstring):
+def string2bool(mstring: str) -> Optional[bool]:
     '''
     '''
-    truth_value = False
+    truth_value: Optional[bool] = False
     if mstring in ['True','true', 'tru', 't',
                    'y','yes', '1']:
         truth_value = True
@@ -82,7 +84,7 @@ def string2bool(mstring):
     return truth_value
 
 
-def bytes2human(nbytes):
+def bytes2human(nbytes: int) -> str:
     '''Return string representation of bytes.
 
     Parameters
@@ -115,7 +117,7 @@ def bytes2human(nbytes):
     return '%0.02f%s' % (nbytes/2.**exp_closest, mapper[exp_closest])
 
 
-def get_object_size(boto_s3_object):
+def get_object_size(boto_s3_object) -> int:
     '''Return the size of the S3 object in MB
 
     Parameters
@@ -130,7 +132,7 @@ def get_object_size(boto_s3_object):
     return boto_s3_object.meta.data['ContentLength']/2.**20
 
 
-def get_fileobject_size(file_object):
+def get_fileobject_size(file_object) -> int:
     '''Return byte size of file-object
 
     Parameters
@@ -147,7 +149,7 @@ def get_fileobject_size(file_object):
     return nbytes
 
 
-def get_key_from_s3fs():
+def get_key_from_s3fs() -> Optional[Tuple[str, str]]:
     '''Get AWS keys from default S3fs location if available.
 
     Returns
@@ -165,9 +167,10 @@ def get_key_from_s3fs():
             content = kfl.readline()
             ACCESS_KEY, SECRET_KEY = content.strip().split(':')
             return ACCESS_KEY, SECRET_KEY
+    return None
 
 
-def get_key_from_environ():
+def get_key_from_environ() -> Optional[Tuple[str, str]]:
     '''Get AWS keys from environmental variables if available
 
     Returns
@@ -182,10 +185,10 @@ def get_key_from_environ():
     try:
         return os.environ['AWS_ACCESS_KEY'], os.environ['AWS_SECRET_KEY']
     except:
-        return
+        return None
 
 
-def get_keys():
+def get_keys() -> Tuple[str, str]:
     '''Read AWS keys from S3fs configuration or environmental variables.
 
     Returns
@@ -206,7 +209,7 @@ def get_keys():
 # object display
 ##############################
 
-def objects2names(objects):
+def objects2names(objects) -> List[str]:
     '''Return the name of all objects in a list
 
     Parameters
@@ -220,7 +223,7 @@ def objects2names(objects):
     return [unquote(t.key) for t in objects]
 
 
-def unquote_names(object_names):
+def unquote_names(object_names: List[str]) -> List[str]:
     '''Clean URL names from a list.
 
     Parameters
@@ -275,7 +278,7 @@ def clean_object_name(input_function):
     return iremove_root
 
 
-def remove_root(string_):
+def remove_root(string_: str) -> str:
     '''remove leading "/" from a string'''
     if string_[0] == SEPARATOR:
         string_ = string_[1:]
@@ -290,12 +293,12 @@ check_digits = re.compile('[0-9]')
 MAGIC_CHECK = re.compile('[*?[]')
 
 
-def has_start_digit(s):
+def has_start_digit(s: str) -> bool:
     return check_digits.match(s) is not None
 
 
 
-def has_magic(s):
+def has_magic(s: str) -> bool:
     '''Check string to see if it has any glob magic
     '''
     return MAGIC_CHECK.search(s) is not None

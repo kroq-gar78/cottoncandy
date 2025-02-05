@@ -1,5 +1,6 @@
 import json
 import six
+from typing import Literal, Optional, Union
 
 import pickle
 
@@ -59,10 +60,10 @@ class BasicInterface(InterfaceObject):
     """Basic cottoncandy interface to the cloud.
     """
 
-    def __init__(self, bucket_name,
-                 ACCESS_KEY, SECRET_KEY, url=None,
-                 force_bucket_creation=False,
-                 verbose=True, backend='s3', **kwargs):
+    def __init__(self, bucket_name: str,
+                 ACCESS_KEY: str, SECRET_KEY: str, url=None,
+                 force_bucket_creation: bool=False,
+                 verbose: bool=True, backend: Literal['s3', 'gdrive', 'local']='s3', **kwargs):
         """
         Parameters
         ----------
@@ -87,8 +88,9 @@ class BasicInterface(InterfaceObject):
         cci  : ccio
             Cottoncandy interface object
         """
-        bucket_name = None if bucket_name == '' else bucket_name
+        bucket_name: Optional[str] = None if bucket_name == '' else bucket_name
 
+        self.backend_interface: Union[S3Client, GDriveClient, LocalClient]
         if backend == 's3':
             self.backend_interface = S3Client(bucket_name, ACCESS_KEY, SECRET_KEY, url,
                                               force_bucket_creation,
@@ -499,7 +501,7 @@ class ArrayInterface(BasicInterface):
         super(ArrayInterface, self).__init__(*args, **kwargs)
 
     @clean_object_name
-    def upload_npy_array(self, object_name, array, acl=DEFAULT_ACL, **metadata):
+    def upload_npy_array(self, object_name: str, array, acl=DEFAULT_ACL, **metadata):
         """Upload a np.ndarray using ``np.save``
 
         This method creates a copy of the array in memory

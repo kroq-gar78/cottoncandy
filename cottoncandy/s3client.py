@@ -237,7 +237,7 @@ class S3Client(CCBackEnd):
     def size(self):
         return self.get_current_bucket_size()
 
-    def get_current_bucket_size(self, limit=10 ** 6, page_size=10 ** 6):
+    def get_current_bucket_size(self, limit=10 ** 6, page_size=10 ** 6) -> int:
         """Counts the size of all objects in the current bucket.
 
         Parameters
@@ -319,7 +319,7 @@ class S3Client(CCBackEnd):
         obj = self.get_s3_object(object_name)
         return obj.put(Body=body, ACL=permissions, Metadata=metadata)
 
-    def download_stream(self, object_name):
+    def download_stream(self, object_name: str) -> CloudStream:
         """Download object raw data.
         This simply calls the object body ``read()`` method.
 
@@ -337,7 +337,7 @@ class S3Client(CCBackEnd):
         s3_object = self.get_s3_object(object_name)
         return CloudStream(BytesIO(s3_object.get()['Body'].read()), sanitize_metadata(s3_object.metadata))
 
-    def upload_file(self, file_name, cloud_name=None, permissions=DEFAULT_ACL):
+    def upload_file(self, file_name: str, cloud_name=Optional[str], permissions=DEFAULT_ACL):
         """Upload a file to S3.
 
         Parameters
@@ -360,7 +360,7 @@ class S3Client(CCBackEnd):
         s3_object = self.get_s3_object(cloud_name)
         return s3_object.upload_file(file_name, ExtraArgs = dict(ACL = permissions))
 
-    def download_to_file(self, object_name, local_name):
+    def download_to_file(self, object_name: str, local_name: str):
         """Download S3 object to a file
 
         Parameters
@@ -373,8 +373,8 @@ class S3Client(CCBackEnd):
         s3_object = self.get_s3_object(object_name)
         return s3_object.download_file(local_name)
 
-    def upload_multipart(self, file_object, object_name, metadata, permissions=DEFAULT_ACL,
-                         buffersize=MPU_CHUNKSIZE, verbose=True, **kwargs):
+    def upload_multipart(self, file_object, object_name: str, metadata, permissions=DEFAULT_ACL,
+                         buffersize: int=MPU_CHUNKSIZE, verbose=True):
         """Multi-part upload for a python file-object.
 
         This automatically creates a multipart upload of an object.
@@ -522,7 +522,7 @@ class S3Client(CCBackEnd):
         metadata = sanitize_metadata(s3_object.metadata)
         return metadata
 
-    def get_object_size(self, object_name):
+    def get_object_size(self, object_name: str) -> int:
         """Get the size in bytes of an object"""
         s3_object = self.get_s3_object(object_name)
         size = s3_object.content_length

@@ -1,8 +1,22 @@
 from abc import ABCMeta, abstractmethod
+from typing import Dict
 
 
 class FileNotFoundError(RuntimeError):
     """File not found error"""
+
+
+class CloudStream(object):
+    """
+    A simple unified representation of an object downloaded from the cloud.
+     .content is a streaming object with a .read() function
+     .metadata is a dictionary of the custom metadata of this object
+
+    TODO: unified metadata
+    """
+    def __init__(self, stream, metadata):
+        self.content = stream
+        self.metadata = metadata
 
 
 class CCBackEnd(object):
@@ -16,7 +30,7 @@ class CCBackEnd(object):
 
     ## Basic File IO
     @abstractmethod
-    def check_file_exists(self, file_name, bucket_name):
+    def check_file_exists(self, file_name: str, bucket_name: str) -> bool:
         """Checks whether a file exists on the cloud
 
         Parameters
@@ -33,7 +47,7 @@ class CCBackEnd(object):
         pass
 
     @abstractmethod
-    def upload_stream(self, stream, cloud_name, metadata, permissions):
+    def upload_stream(self, stream, cloud_name: str, metadata, permissions) -> bool:
         """Uploads a stream object with a .read() function
 
         Parameters
@@ -54,7 +68,7 @@ class CCBackEnd(object):
         pass
 
     @abstractmethod
-    def upload_file(self, file_name, cloud_name, permissions):
+    def upload_file(self, file_name: str, cloud_name: str, permissions) -> bool:
         """Uploads a file from disk
 
         Parameters
@@ -73,7 +87,7 @@ class CCBackEnd(object):
         pass
 
     @abstractmethod
-    def upload_multipart(self, stream, cloud_name, metadata, permissions, buffersize, verbose):
+    def upload_multipart(self, stream, cloud_name: str, metadata: dict, permissions, buffersize: int, verbose: bool) -> bool:
         """Multi-part upload for large stream objects
 
         Parameters
@@ -98,7 +112,7 @@ class CCBackEnd(object):
         pass
 
     @abstractmethod
-    def download_stream(self, cloud_name):
+    def download_stream(self, cloud_name: str) -> CloudStream:
         """Downloads a object to an in-memory stream
 
         Parameters
@@ -113,7 +127,7 @@ class CCBackEnd(object):
         pass
 
     @abstractmethod
-    def download_to_file(self, cloud_name, file_name):
+    def download_to_file(self, cloud_name: str, file_name: str) -> bool:
         """Downloads an object directly to disk
 
         Parameters
@@ -132,7 +146,7 @@ class CCBackEnd(object):
     ## Basic File management
 
     @abstractmethod
-    def list_directory(self, path, limit):
+    def list_directory(self, path: str, limit: int):
         """Lists the content of a directory
 
         Parameters
@@ -157,7 +171,7 @@ class CCBackEnd(object):
         pass
 
     @abstractmethod
-    def copy(self, source, destination, source_bucket, destination_bucket, overwrite):
+    def copy(self, source: str, destination: str, source_bucket: str, destination_bucket: str, overwrite: bool) -> bool:
         """Copies an object
 
         Parameters
@@ -180,7 +194,7 @@ class CCBackEnd(object):
         pass
 
     @abstractmethod
-    def move(self, source, destination, source_bucket, destination_bucket, overwrite):
+    def move(self, source: str, destination: str, source_bucket: str, destination_bucket: str, overwrite: bool):
         """Moves an object
 
         Parameters
@@ -198,7 +212,7 @@ class CCBackEnd(object):
         pass
 
     @abstractmethod
-    def delete(self, file_name, recursive=False, delete=False):
+    def delete(self, file_name: str, recursive: bool=False, delete: bool=False):
         """Deletes an object
 
         Parameters
@@ -218,7 +232,7 @@ class CCBackEnd(object):
 
     @property
     @abstractmethod
-    def size(self):
+    def size(self) -> int:
         """Size of stored cloud items in bytes
 
         Returns
@@ -227,15 +241,3 @@ class CCBackEnd(object):
         """
         pass
 
-
-class CloudStream(object):
-    """
-    A simple unified representation of an object downloaded from the cloud.
-     .content is a streaming object with a .read() function
-     .metadata is a dictionary of the custom metadata of this object
-
-    TODO: unified metadata
-    """
-    def __init__(self, stream, metadata):
-        self.content = stream
-        self.metadata = metadata
