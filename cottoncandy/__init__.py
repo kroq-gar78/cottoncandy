@@ -3,7 +3,6 @@
 
 from __future__ import absolute_import
 import os
-from base64 import b64decode
 __all__ = []
 
 from .browser import BrowserObject

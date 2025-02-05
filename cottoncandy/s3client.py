@@ -15,10 +15,6 @@ try:
     from urllib import unquote
 except ImportError:
     from urllib.parse import unquote
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
 
 
 class S3Client(CCBackEnd):
