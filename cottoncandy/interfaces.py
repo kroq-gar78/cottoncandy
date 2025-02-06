@@ -34,6 +34,7 @@ COMPRESSION_LARGE = config.get('compression', 'large_array')
 
 try:
     import numpy as np
+    import numpy.typing as npt
     from scipy.sparse import (coo_matrix,
                             csr_matrix,
                             csc_matrix,
@@ -501,7 +502,7 @@ class ArrayInterface(BasicInterface):
         super(ArrayInterface, self).__init__(*args, **kwargs)
 
     @clean_object_name
-    def upload_npy_array(self, object_name: str, array, acl=DEFAULT_ACL, **metadata):
+    def upload_npy_array(self, object_name: str, array: npt.ArrayLike, acl=DEFAULT_ACL, **metadata):
         """Upload a np.ndarray using ``np.save``
 
         This method creates a copy of the array in memory
@@ -531,7 +532,7 @@ class ArrayInterface(BasicInterface):
         return response
 
     @clean_object_name
-    def download_npy_array(self, object_name):
+    def download_npy_array(self, object_name: str) -> npt.NDArray[Any]:
         """Download a np.ndarray uploaded using ``np.save`` with ``np.load``.
 
         Parameters
@@ -547,7 +548,7 @@ class ArrayInterface(BasicInterface):
         return array
 
     @clean_object_name
-    def upload_raw_array(self, object_name, array, compression=DO_COMPRESSION, acl=DEFAULT_ACL, **metadata):
+    def upload_raw_array(self, object_name: str, array: npt.NDArray, compression=DO_COMPRESSION, acl=DEFAULT_ACL, **metadata):
         """Upload a binary representation of a np.ndarray
 
         This method reads the array content from memory to upload.
@@ -643,7 +644,7 @@ class ArrayInterface(BasicInterface):
         return response
 
     @clean_object_name
-    def download_raw_array(self, object_name, buffersize=2**16, **kwargs):
+    def download_raw_array(self, object_name: str, buffersize: int=2**16, **kwargs) -> npt.NDArray:
         """Download a binary np.ndarray and return an np.ndarray object
         This method downloads an array without any disk or memory overhead.
 
