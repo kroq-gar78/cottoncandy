@@ -9,7 +9,7 @@ import urllib
 import itertools
 from dateutil.tz import tzlocal
 from functools import wraps
-from typing import Iterable, List, Optional, Tuple
+from typing import BinaryIO, Iterable, List, Optional, Tuple
 
 
 from urllib.parse import unquote
@@ -479,7 +479,7 @@ class GzipInputStream(object):
     Adapted from: http://effbot.org/librarybook/zlib-example-4.py
     """
 
-    def __init__(self, fileobj, block_size=16384):
+    def __init__(self, fileobj: BinaryIO, block_size: int=16384):
         """
         Initialize with the given file-like object.
 
@@ -553,10 +553,10 @@ class GzipInputStream(object):
 
     def readline(self):
         # make sure we have an entire line
-        while self._zip and "\n" not in self._data:
+        while self._zip and "\n" not in self._data:  # type: ignore
             self.__fill(len(self._data) + 512)
 
-        pos = string.find(self._data, "\n") + 1
+        pos = string.find(self._data, "\n") + 1  # type: ignore
         if pos <= 0:
             return self.read()
         return self.read(pos)
