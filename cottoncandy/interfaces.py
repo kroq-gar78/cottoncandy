@@ -590,8 +590,8 @@ class ArrayInterface(BasicInterface):
                 raise ValueError(("gzip does not support compression of >2GB arrays. "
                                   "Try `compression='Zstd'` instead."))
 
-        order = 'C' if array.flags.carray else 'F'
-        if ((not array.flags['%s_CONTIGUOUS' % order] and six.PY2) or
+        order: Literal['C', 'F'] = 'C' if array.flags.carray else 'F'
+        if ((not array.flags['%s_CONTIGUOUS' % order] and six.PY2) or  # type: ignore
                 (not array.flags['C_CONTIGUOUS'] and six.PY3)):
             warn('Non-contiguous array. Creating copy (will use extra memory)...')
 
