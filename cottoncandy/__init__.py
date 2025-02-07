@@ -9,7 +9,7 @@ import os
 from cottoncandy import options
 
 from .browser import BrowserObject
-from .interfaces import InterfaceObject
+from .interfaces import DefaultInterface
 from .utils import get_keys, string2bool
 
 __version__ = "0.3.0"
@@ -31,7 +31,7 @@ def get_interface(bucket_name: str=default_bucket,
                   force_bucket_creation: bool=force_bucket_creation,
                   verbose: bool=True,
                   backend: Literal['s3', 'gdrive', 'local']='s3',
-                  **kwargs) -> InterfaceObject:
+                  **kwargs) -> DefaultInterface:
     """Return an interface to the cloud.
 
     Parameters
@@ -51,7 +51,7 @@ def get_interface(bucket_name: str=default_bucket,
 
     Returns
     -------
-    cci : cottoncandy.InterfaceObject
+    cci : cottoncandy.DefaultInterface
     """
     from cottoncandy.interfaces import DefaultInterface
 
