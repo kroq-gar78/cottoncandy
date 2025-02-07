@@ -590,7 +590,7 @@ class ArrayInterface(BasicInterface):
                                   "Try `compression='Zstd'` instead."))
 
         order: Literal['C', 'F'] = 'C' if array.flags.carray else 'F'
-        if ((not array.flags['%s_CONTIGUOUS' % order] and six.PY2) or
+        if ((not array.flags['%s_CONTIGUOUS' % order] and six.PY2) or  # type: ignore
                 (not array.flags['C_CONTIGUOUS'] and six.PY3)):
             warn('Non-contiguous array. Creating copy (will use extra memory)...')
 
@@ -1003,7 +1003,7 @@ class FileSystemInterface(BasicInterface):
         """
         super(FileSystemInterface, self).__init__(*args, **kwargs)
 
-    def lsdir(self, path='/', limit=10**3):
+    def lsdir(self, path: str='/', limit: int=10**3):
         """List the contents of a directory
 
         Parameters
@@ -1018,7 +1018,7 @@ class FileSystemInterface(BasicInterface):
         return self.backend_interface.list_directory(path, limit)
 
     @clean_object_name
-    def ls(self, pattern, page_size=10**3, limit=10**3, verbose=False):
+    def ls(self, pattern: str, page_size: int=10**3, limit: int=10**3, verbose: bool=False):
         """File-system like search for S3 objects
 
         Parameters
@@ -1071,7 +1071,7 @@ class FileSystemInterface(BasicInterface):
         return list(object_names)
 
     @clean_object_name
-    def glob(self, pattern, **kwargs):
+    def glob(self, pattern: str, **kwargs):
         """Return a list of object names in the cloud storage
         that match the glob pattern.
 
@@ -1201,7 +1201,7 @@ class FileSystemInterface(BasicInterface):
         return matches
 
     @clean_object_name
-    def download_directory(self, directory, disk_name):
+    def download_directory(self, directory: str, disk_name: os.PathLike):
         """
         Download an entire directory
         NOTE: currently only tested on s3
@@ -1211,7 +1211,7 @@ class FileSystemInterface(BasicInterface):
         self
         directory : str
             directory on s3 to download
-        disk_name :
+        disk_name : PathLike
             name of directory on disk to download to
 
         Returns
@@ -1235,20 +1235,20 @@ class FileSystemInterface(BasicInterface):
                 continue
             subpath = re.sub(directory, '', f)
             path = os.path.join(disk_name, subpath)
-            subfolder = re.match('.*\/', path).group(0)
+            subfolder = re.match('.*\/', path).group(0)  # type: ignore
             if not os.path.exists(subfolder):
                 os.makedirs(subfolder)
             self.download_to_file(f, path)
 
     @clean_object_name
-    def search(self, pattern, **kwargs):
+    def search(self, pattern: str, **kwargs):
         """Print the objects matching the glob pattern
 
         See ``glob`` documentation for details
         """
         matches = self.glob(pattern, verbose=True, **kwargs)
 
-    def get_browser(self):
+    def get_browser(self) -> cottoncandy.browser.BrowserObject:
         """Return an object which can be tab-completed
         to browse the contents of the bucket as if it were a file-system
 
@@ -1256,8 +1256,8 @@ class FileSystemInterface(BasicInterface):
         """
         return cottoncandy.browser.S3Directory('', interface = self)
 
-    def cp(self, source_name, dest_name,
-           source_bucket=None, dest_bucket=None, overwrite=False):
+    def cp(self, source_name: str, dest_name: str,
+           source_bucket: Optional[str]=None, dest_bucket: Optional[str]=None, overwrite: bool=False):
         """Copy an object
 
         Parameters
@@ -1278,8 +1278,8 @@ class FileSystemInterface(BasicInterface):
         # TODO: support directories
         return self.backend_interface.copy(source_name, dest_name, source_bucket, dest_bucket, overwrite)
 
-    def mv(self, source_name, dest_name,
-           source_bucket=None, dest_bucket=None, overwrite=False):
+    def mv(self, source_name: str, dest_name: str,
+           source_bucket: Optional[str]=None, dest_bucket: Optional[str]=None, overwrite: bool=False):
         """Move an object (make copy and delete old object)
 
         Parameters
@@ -1300,7 +1300,7 @@ class FileSystemInterface(BasicInterface):
         # TODO: Support directories
         return self.backend_interface.move(source_name, dest_name, source_bucket, dest_bucket, overwrite)
 
-    def rm(self, object_name, recursive=False, delete=True):
+    def rm(self, object_name: str, recursive: bool=False, delete: bool=True):
         """Delete an object, or a subtree ('path/to/stuff').
 
         Parameters
