@@ -54,6 +54,7 @@ def main(**kwargs):
           package_data={
               'cottoncandy':[
                   'defaults.cfg',
+                  'py.typed',
                 ],
               },
           cmdclass=dict(install=my_install),
