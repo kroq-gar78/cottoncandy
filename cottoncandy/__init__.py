@@ -7,7 +7,7 @@ import os
 __all__ = []
 
 from .browser import BrowserObject
-from .interfaces import InterfaceObject
+from .interfaces import DefaultInterface
 from .utils import string2bool, get_keys
 
 from cottoncandy import options
@@ -29,7 +29,7 @@ def get_interface(bucket_name: str=default_bucket,
                   force_bucket_creation: bool=force_bucket_creation,
                   verbose: bool=True,
                   backend: Literal['s3', 'gdrive', 'local']='s3',
-                  **kwargs) -> InterfaceObject:
+                  **kwargs) -> DefaultInterface:
     """Return an interface to the cloud.
 
     Parameters
@@ -49,7 +49,7 @@ def get_interface(bucket_name: str=default_bucket,
 
     Returns
     -------
-    cci : cottoncandy.InterfaceObject
+    cci : cottoncandy.DefaultInterface
     """
     from cottoncandy.interfaces import DefaultInterface
 
@@ -116,7 +116,6 @@ def get_browser(bucket_name: str=default_bucket,
     >>> browser.sweet_project.sub01_awesome_analysis_DOT_grp.result_model01
     <cottoncandy-dataset <bucket:my_bucket_name [1.00MB:shape=(10000)]>
     """
-    from cottoncandy.interfaces import DefaultInterface
     from cottoncandy.browser import S3Directory
 
     if (ACCESS_KEY is False) and (SECRET_KEY is False):
