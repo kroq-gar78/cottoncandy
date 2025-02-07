@@ -1,5 +1,6 @@
 import json
 import six
+from typing import Any, Literal, Optional, Union
 
 import pickle
 
@@ -28,11 +29,12 @@ from .utils import (pathjoin, clean_object_name, print_objects, get_fileobject_s
 from .options import config
 
 DO_COMPRESSION = config.get('compression', 'do_compression').lower() in ('true', 't', 'y', 'yes')
-COMPRESSION_SMALL = config.get('compression', 'small_array')
-COMPRESSION_LARGE = config.get('compression', 'large_array')
+COMPRESSION_SMALL: str = config.get('compression', 'small_array')
+COMPRESSION_LARGE: str = config.get('compression', 'large_array')
 
 try:
     import numpy as np
+    import numpy.typing as npt
     from scipy.sparse import (coo_matrix,
                             csr_matrix,
                             csc_matrix,
@@ -141,7 +143,7 @@ class BasicInterface(InterfaceObject):
             return self.backend_interface.path
 
     @clean_object_name
-    def exists_object(self, object_name, bucket_name=None, raise_err=False):
+    def exists_object(self, object_name: str, bucket_name: Optional[str]=None, raise_err: bool=False) -> bool:
         """Check whether object exists in bucket
 
         Parameters
@@ -158,7 +160,7 @@ class BasicInterface(InterfaceObject):
         else:
             return exists
 
-    def exists_bucket(self, bucket_name):
+    def exists_bucket(self, bucket_name: str) -> bool:
         """Check whether the bucket exists"""
         return self.backend_interface.check_bucket_exists(bucket_name)
 
@@ -228,7 +230,7 @@ class BasicInterface(InterfaceObject):
         """
         return self.backend_interface.list_objects(**kwargs)
 
-    def get_bucket_size(self, limit=10**6, page_size=10**6):
+    def get_bucket_size(self, limit: int=10**6, page_size: int=10**6) -> int:
         """Counts the size of all objects in the current bucket.
 
         Parameters
@@ -254,7 +256,7 @@ class BasicInterface(InterfaceObject):
         warn('Deprecated, use get_size() instead', DeprecationWarning)
         return self.backend_interface.size
 
-    def get_size(self):
+    def get_size(self) -> int:
         """
         Gets the total size of the current container of objects. Generic naming.
         Parameters
@@ -322,9 +324,9 @@ class BasicInterface(InterfaceObject):
         """
         return self.backend_interface.download_stream(object_name, threads)
 
-    def upload_from_file(self, flname, object_name=None,
+    def upload_from_file(self, flname: str, object_name: Optional[str]=None,
                          ExtraArgs=dict(ACL=DEFAULT_ACL),
-                         threads = THREADS):
+                         threads: int = THREADS):
         """Upload a file to the cloud.
 
         Parameters
@@ -345,8 +347,8 @@ class BasicInterface(InterfaceObject):
         """
         return self.backend_interface.upload_file(flname, object_name, ExtraArgs['ACL'], threads)
 
-    def upload_from_directory(self, disk_path, cloud_path=None,
-                              recursive=False, ExtraArgs=dict(ACL=DEFAULT_ACL), threads = THREADS):
+    def upload_from_directory(self, disk_path: str, cloud_path: Optional[str]=None,
+                              recursive: bool=False, ExtraArgs=dict(ACL=DEFAULT_ACL), threads: int = THREADS):
         '''Upload a directory to the cloud
         '''
         filenames = sorted(os.listdir(disk_path))
@@ -366,7 +368,7 @@ class BasicInterface(InterfaceObject):
         print('Uploaded "%s" to "%s"' % (disk_path, cloud_path))
 
     @clean_object_name
-    def download_to_file(self, object_name, file_name, threads = THREADS):
+    def download_to_file(self, object_name: str, file_name: str, threads: int = THREADS):
         """Download cloud object to a file
 
         Parameters
@@ -380,7 +382,7 @@ class BasicInterface(InterfaceObject):
         return self.backend_interface.download_to_file(object_name, file_name, threads)
 
     @clean_object_name
-    def download_object(self, object_name, threads = THREADS):
+    def download_object(self, object_name: str, threads: int = THREADS) -> Any:
         """Download object raw data.
         This simply calls the object body ``read()`` method.
 
@@ -398,7 +400,7 @@ class BasicInterface(InterfaceObject):
         return self.download_stream(object_name, threads).content.read()
 
     @clean_object_name
-    def upload_json(self, object_name, ddict, acl=DEFAULT_ACL, threads = 1, **metadata):
+    def upload_json(self, object_name, ddict, acl=DEFAULT_ACL, threads: int = 1, **metadata):
         """Upload a dict as a JSON using ``json.dumps``
 
         Parameters
@@ -412,7 +414,7 @@ class BasicInterface(InterfaceObject):
         return self.upload_object(object_name, StringIO(json_data.encode()), acl, threads, **metadata)
 
     @clean_object_name
-    def download_json(self, object_name, threads = 1):
+    def download_json(self, object_name: str, threads: int = 1) -> Any:
         """Download a JSON object
 
         Parameters
@@ -430,7 +432,7 @@ class BasicInterface(InterfaceObject):
         return json.loads(obj.decode())
 
     @clean_object_name
-    def upload_pickle(self, object_name, data_object, acl=DEFAULT_ACL, threads = THREADS, **metadata):
+    def upload_pickle(self, object_name: str, data_object: Any, acl: str=DEFAULT_ACL, threads: int = THREADS, **metadata):
         """Upload an object using pickle: ``pickle.dumps``
 
         Parameters
@@ -445,7 +447,7 @@ class BasicInterface(InterfaceObject):
         return response
 
     @clean_object_name
-    def download_pickle(self, object_name, threads = THREADS):
+    def download_pickle(self, object_name: str, threads: int = THREADS) -> Any:
         """Download a pickle object
 
         Parameters
@@ -487,7 +489,7 @@ class ArrayInterface(BasicInterface):
         super(ArrayInterface, self).__init__(*args, **kwargs)
 
     @clean_object_name
-    def upload_npy_array(self, object_name, array, acl=DEFAULT_ACL, threads = THREADS, **metadata):
+    def upload_npy_array(self, object_name: str, array: npt.NDArray, acl: str=DEFAULT_ACL, threads: int = THREADS, **metadata):
         """Upload a np.ndarray using ``np.save``
 
         This method creates a copy of the array in memory
@@ -519,7 +521,7 @@ class ArrayInterface(BasicInterface):
         return response
 
     @clean_object_name
-    def download_npy_array(self, object_name, threads = THREADS):
+    def download_npy_array(self, object_name: str, threads: int = THREADS) -> npt.NDArray:
         """Download a np.ndarray uploaded using ``np.save`` with ``np.load``.
 
         Parameters
@@ -537,7 +539,7 @@ class ArrayInterface(BasicInterface):
         return array
 
     @clean_object_name
-    def upload_raw_array(self, object_name, array, compression=DO_COMPRESSION, acl=DEFAULT_ACL, threads = THREADS, **metadata):
+    def upload_raw_array(self, object_name: str, array: npt.NDArray, compression: Optional[Union[bool, str]]=DO_COMPRESSION, acl: str=DEFAULT_ACL, threads: int = THREADS, **metadata):
         """Upload a binary representation of a np.ndarray
 
         This method reads the array content from memory to upload.
@@ -581,7 +583,7 @@ class ArrayInterface(BasicInterface):
                 raise ValueError(("gzip does not support compression of >2GB arrays. "
                                   "Try `compression='Zstd'` instead."))
 
-        order = 'C' if array.flags.carray else 'F'
+        order: Literal['C', 'F'] = 'C' if array.flags.carray else 'F'
         if ((not array.flags['%s_CONTIGUOUS' % order] and six.PY2) or
                 (not array.flags['C_CONTIGUOUS'] and six.PY3)):
             warn('Non-contiguous array. Creating copy (will use extra memory)...')
@@ -635,7 +637,7 @@ class ArrayInterface(BasicInterface):
         return response
 
     @clean_object_name
-    def download_raw_array(self, object_name, buffersize=2**16, threads = THREADS, **kwargs):
+    def download_raw_array(self, object_name: str, buffersize: int=2**16, threads: int = THREADS, **kwargs) -> npt.NDArray:
         """Download a binary np.ndarray and return an np.ndarray object
         This method downloads an array without any disk or memory overhead.
 
@@ -898,7 +900,7 @@ class ArrayInterface(BasicInterface):
         return da.Array(dask, dask_name, chunks, shape = shape, dtype = dtype)
 
     @clean_object_name
-    def upload_sparse_array(self, object_name, arr, threads = THREADS):
+    def upload_sparse_array(self, object_name: str, arr: Any, threads: int = THREADS):
         """Uploads a scipy.sparse array as a folder of array objects
 
         Parameters
@@ -941,7 +943,7 @@ class ArrayInterface(BasicInterface):
         return self.upload_json(self.pathjoin(object_name, 'metadata.json'), metadata)
 
     @clean_object_name
-    def download_sparse_array(self, object_name, threads = THREADS):
+    def download_sparse_array(self, object_name: str, threads: int = THREADS) -> Any:
         """Downloads a scipy.sparse array
 
         Parameters
