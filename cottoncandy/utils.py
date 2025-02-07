@@ -9,6 +9,7 @@ import urllib
 import itertools
 from dateutil.tz import tzlocal
 from functools import wraps
+from typing import cast, Any, Callable, TypeVar
 
 
 from urllib.parse import unquote
@@ -256,14 +257,18 @@ def print_objects(object_list):
 ##############################
 
 
-def clean_object_name(input_function):
+# Decorator typing from mypy docs:
+# https://mypy.readthedocs.io/en/stable/generics.html#declaring-decorators
+F = TypeVar('F', bound=Callable[..., Any])
+
+def clean_object_name(input_function: F) -> F:
     '''Remove leading "/" from object_name
 
     This is important for compatibility with S3fs.
     S3fs does not list objects with a "/" prefix.
     '''
     @wraps(input_function)
-    def iremove_root(self, object_name, *args, **kwargs):
+    def iremove_root(self, object_name: str, *args: Any, **kwargs: Any) -> Any:
         object_name = re.sub('//+', '/', object_name)
 
         if object_name == '':
@@ -272,7 +277,7 @@ def clean_object_name(input_function):
             object_name = object_name[1:]
 
         return input_function(self, object_name, *args, **kwargs)
-    return iremove_root
+    return cast(F, iremove_root)
 
 
 def remove_root(string_):
