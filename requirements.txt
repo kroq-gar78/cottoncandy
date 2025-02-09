@@ -1,8 +1,12 @@
 wheel>=0.31.1
 numpy>=1.6.0
 scipy>=0.9.0
-botocore
-boto3>=1.2.3
+# To fix dependency for urllib2
+# https://github.com/boto/botocore/pull/3141
+botocore>=1.34.63
+# New boto API is unsupported by some 3rd party services
+# https://github.com/boto/boto3/issues/4400#issuecomment-2605410470
+boto3>=1.2.3,<1.36.0
 dask[array]
 cloudpickle>=0.2.2
 toolz>=0.7.4
