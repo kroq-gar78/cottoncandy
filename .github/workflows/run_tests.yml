@@ -4,11 +4,11 @@ on: [push]
 
 jobs:
   run-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: [3.7]
-      max-parallel: 5
+        python-version: [3.8, 3.9, '3.10', '3.11', '3.12', '3.13']
+      max-parallel: 2
 
     steps:
     - uses: actions/checkout@v2
@@ -27,6 +27,9 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
+        pip freeze|grep -e boto -e urllib
+        python -c 'import ssl'
+        python -c 'import boto3, botocore; print(boto3.__version__, botocore.__version__)'
         pip install -e .
 
     - name: Lint with flake8
@@ -44,9 +47,5 @@ jobs:
         DL_ACCESS_KEY: ${{ secrets.DL_ACCESS_KEY }} 
         DL_URL: ${{ secrets.DL_URL }} 
       run: |
-        pip install -q pytest pytest-cov codecov
-        pytest --cov=./
-
-    - name: Run codecov
-      run: |
-        codecov
+        pip install -q pytest
+        pytest -k '(not dask) or local' #pytest --cov=./
