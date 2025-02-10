@@ -49,4 +49,4 @@ jobs:
         DL_URL: ${{ secrets.DL_URL }} 
       run: |
         pip install -q pytest
-        pytest -k 'not dask' #pytest --cov=./
+        pytest -rP -k 'not dask' #pytest --cov=./
