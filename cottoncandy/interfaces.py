@@ -1,6 +1,6 @@
 import json
 import six
-from typing import Any, Literal, Optional, Union
+from typing import Any, List, Literal, Optional, Union
 
 import pickle
 
@@ -1003,7 +1003,7 @@ class FileSystemInterface(BasicInterface):
         """
         super(FileSystemInterface, self).__init__(*args, **kwargs)
 
-    def lsdir(self, path: str='/', limit: int=10**3):
+    def lsdir(self, path: str='/', limit: int=10**3) -> List[str]:
         """List the contents of a directory
 
         Parameters
@@ -1018,7 +1018,7 @@ class FileSystemInterface(BasicInterface):
         return self.backend_interface.list_directory(path, limit)
 
     @clean_object_name
-    def ls(self, pattern: str, page_size: int=10**3, limit: int=10**3, verbose: bool=False):
+    def ls(self, pattern: str, page_size: int=10**3, limit: int=10**3, verbose: bool=False) -> List[str]:
         """File-system like search for S3 objects
 
         Parameters
