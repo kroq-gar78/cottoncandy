@@ -45,9 +45,7 @@ jobs:
     - name: Check types with mypy
       continue-on-error: true
       run: |
-        # IPython is needed for something in gdriveclient
-        pip install -q mypy ipython
-        mypy --install-types --non-interactive cottoncandy/
+        python -m mypy --install-types --non-interactive cottoncandy/
 
     - name: Test with pytest
       env:
