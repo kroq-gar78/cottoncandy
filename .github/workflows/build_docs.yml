@@ -24,7 +24,7 @@ jobs:
     - uses: actions/cache@v4
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
 
@@ -33,17 +33,18 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y rpl 
         pip install --upgrade pip
-        pip install -e .[extra,docs] --no-build-isolation
-        python -c 'import cottoncandy; print(cottoncandy.__version__)'
+        pip install setuptools wheel
+        pip install -e .[extra] --group docs
+        python -c 'import cottoncandy; print(cottoncandy.__version__)' # create config
 
     - name: Build documents
       run: |
         cd gendoc && make githubio-docs && cd ..
-        touch docs/_build/html/.nojekyll # needed??
+        touch docs/.nojekyll
 
     - name: Publish to gh-pages if tagged
       if: startsWith(github.ref, 'refs/tags')
       uses: JamesIves/github-pages-deploy-action@v4.7.3
       with:
         branch: gh-pages
-        folder: docs/_build/html
+        folder: docs
