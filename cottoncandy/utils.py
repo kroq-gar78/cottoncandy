@@ -9,7 +9,7 @@ import urllib
 import itertools
 from dateutil.tz import tzlocal
 from functools import wraps
-from typing import cast, Any, Callable, TypeVar
+from typing import cast, Any, Callable, TypeVar, Union
 
 
 from urllib.parse import unquote
@@ -55,7 +55,7 @@ def sanitize_metadata(metadict):
     return outdict
 
 
-def pathjoin(a, *p):
+def pathjoin(a: str, *p: str) -> str:
     """Join two or more pathname components, inserting SEPARATOR as needed.
     If any component is an absolute path, all previous path components
     will be discarded.  An empty last part will result in a path that
@@ -71,7 +71,7 @@ def pathjoin(a, *p):
     return path
 
 
-def string2bool(mstring):
+def string2bool(mstring: str) -> Union[bool, None]:
     '''
     '''
     truth_value = False
@@ -83,7 +83,7 @@ def string2bool(mstring):
     return truth_value
 
 
-def bytes2human(nbytes):
+def bytes2human(nbytes: int) -> str:
     '''Return string representation of bytes.
 
     Parameters
@@ -131,7 +131,7 @@ def get_object_size(boto_s3_object):
     return boto_s3_object.meta.data['ContentLength']/2.**20
 
 
-def get_fileobject_size(file_object):
+def get_fileobject_size(file_object) -> int:
     '''Return byte size of file-object
 
     Parameters
