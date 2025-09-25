@@ -1,0 +1,49 @@
+name: Build docs
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: 3.9
+
+    - uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y rpl 
+        pip install --upgrade pip
+        pip install -e .[extra,docs] --no-build-isolation
+        python -c 'import cottoncandy; print(cottoncandy.__version__)'
+
+    - name: Build documents
+      run: |
+        cd gendoc && make githubio-docs && cd ..
+        touch docs/_build/html/.nojekyll # needed??
+
+    - name: Publish to gh-pages if tagged
+      if: startsWith(github.ref, 'refs/tags')
+      uses: JamesIves/github-pages-deploy-action@v4.7.3
+      with:
+        branch: gh-pages
+        folder: docs/_build/html
