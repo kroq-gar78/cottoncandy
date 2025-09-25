@@ -21,6 +21,9 @@ for depth in range(max_depth):
         "Searching files in {path_to_search}".format(path_to_search=path_to_search)
         for suffix in ["html", "js", "txt"]:
             for word, replacement in replacement_dict.items():
+                if (word is None) or len(word) == 0:
+                    word = '""'
+                # TODO: use subprocess tohandle this more cleanly
                 cmd = "rpl -iR {word} {replacement} {path_to_search}".format(word=word, replacement=replacement, path_to_search=os.path.join(path_to_search, intermediate_path, "*.{suffix}".format(suffix=suffix)))
                 print(cmd)
                 print(os.system(cmd))
