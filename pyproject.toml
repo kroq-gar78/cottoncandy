@@ -34,9 +34,10 @@ extra = [
 [dependency-groups]
 # For development
 test = [
+    "codecov",
+    "flake8",
     "pytest",
     "pytest-cov",
-    "codecov",
     "pytest-rerunfailures",
 ]
 docs = [
