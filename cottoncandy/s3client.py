@@ -5,6 +5,7 @@ from functools import reduce
 import boto3
 from boto3.s3.transfer import TransferConfig
 import botocore
+import botocore.exceptions # ty wants this explicitly imported
 import logging
 from io import BytesIO
 
