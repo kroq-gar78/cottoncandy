@@ -98,6 +98,7 @@ class LocalClient(CCBackEnd):
             source_bucket=None,
             destination_bucket=None,
             overwrite=True,
+            copy_metadata=False,
         )
 
     def download_stream(self, cloud_name, threads = 1):
@@ -195,7 +196,7 @@ class LocalClient(CCBackEnd):
         return results
 
     def copy(self, source, destination, source_bucket, destination_bucket,
-             overwrite):
+             overwrite, copy_metadata=True):
         """Copies an object
 
         Parameters
@@ -208,6 +209,9 @@ class LocalClient(CCBackEnd):
         destination_bucket : ignored
         overwrite : bool
             overwrite if destination exists
+        copy_metadata : bool
+            also copy metadata file? (we don't want to do this if copying from
+            the local filesystem)
 
         Returns
         -------
@@ -221,6 +225,11 @@ class LocalClient(CCBackEnd):
             destination_bucket = source_bucket
         source = os.path.join(source_bucket, source)
         destination = os.path.join(destination_bucket, destination)
+        if copy_metadata:
+            source_metadata = os.path.join(source_bucket, source + METADATA_SUFFIX)
+            destination_metadata = os.path.join(destination_bucket, destination + METADATA_SUFFIX)
+            shutil.copy(source_metadata, destination_metadata)
+
         auto_makedirs(destination)
         return shutil.copy(source, destination)
 
@@ -248,8 +257,10 @@ class LocalClient(CCBackEnd):
             destination_bucket = source_bucket
         source = os.path.join(source_bucket, source)
         destination = os.path.join(destination_bucket, destination)
+        source_metadata = os.path.join(source_bucket, source + METADATA_SUFFIX)
+        destination_metadata = os.path.join(destination_bucket, destination + METADATA_SUFFIX)
         auto_makedirs(destination)
-        return shutil.move(source, destination)
+        return shutil.move(source, destination) and shutil.move(source_metadata, destination_metadata)
 
     def delete(self, cloud_name, recursive=False, delete=False):
         """Deletes an object
@@ -270,6 +281,9 @@ class LocalClient(CCBackEnd):
         cloud_name = os.path.join(self.path, cloud_name)
         if os.path.isfile(cloud_name):
             os.remove(cloud_name)
+            cloud_metadata_name = cloud_name + METADATA_SUFFIX
+            if os.path.isfile(cloud_metadata_name):
+                os.remove(cloud_metadata_name)
         else:
             if recursive:
                 shutil.rmtree(cloud_name)
