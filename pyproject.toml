@@ -46,7 +46,11 @@ docs = [
     "sphinx",
     "sphinx-rtd-theme",
 ]
-dev = [{include-group = "test"}, {include-group = "docs"}]
+dev = [
+    {include-group = "test"},
+    {include-group = "docs"},
+    "cottoncandy[extra]",
+]
 
 [project.urls]
 Homepage = "http://gallantlab.github.io/cottoncandy/"
