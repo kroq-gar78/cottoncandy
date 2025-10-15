@@ -49,7 +49,7 @@ jobs:
         DL_ACCESS_KEY: ${{ secrets.DL_ACCESS_KEY }} 
         DL_URL: ${{ secrets.DL_URL }} 
       run: |
-        pytest --reruns 2 --cov=./
+        pytest --reruns 2
 
     - name: Run codecov
       run: |

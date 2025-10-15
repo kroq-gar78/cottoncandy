@@ -58,6 +58,9 @@ Repository = "https://github.com/gallantlab/cottoncandy"
 Documentation = "http://gallantlab.github.io/cottoncandy/"
 "Bug Tracker" = "https://github.com/gallantlab/cottoncandy/issues"
 
+[tool.pytest.ini_options]
+addopts = "--cov=. --cov-report xml:coverage.xml"
+
 [tool.setuptools]
 packages = ["cottoncandy"]
 include-package-data = true
