@@ -49,7 +49,6 @@ jobs:
         DL_ACCESS_KEY: ${{ secrets.DL_ACCESS_KEY }} 
         DL_URL: ${{ secrets.DL_URL }} 
       run: |
-        pip install -q pytest pytest-cov codecov pytest-rerunfailures
         pytest --reruns 2 --cov=./
 
     - name: Run codecov
