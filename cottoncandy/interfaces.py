@@ -982,6 +982,8 @@ class ArrayInterface(BasicInterface):
                              shape = shape)
         elif arrtype == 'dia':
             arr = dia_matrix((d['data'], d['offsets']), shape = shape)
+        else:
+            raise ValueError(f"unsupported sparse array type: {arrtype}")
 
         return arr
 
