@@ -1,4 +1,6 @@
+import glob
 import os
+import subprocess
 import sys
 
 from cottoncandy import options
@@ -20,10 +22,16 @@ for depth in range(max_depth):
     for path_to_search in paths_to_search_list:
         "Searching files in {path_to_search}".format(path_to_search=path_to_search)
         for suffix in ["html", "js", "txt"]:
+            full_path_to_search=os.path.join(path_to_search, intermediate_path, "*.{suffix}".format(suffix=suffix))
+            files = glob.glob(full_path_to_search)
+            if len(files) < 1: continue
+
             for word, replacement in replacement_dict.items():
-                if (word is None) or len(word) == 0:
-                    word = '""'
-                # TODO: use subprocess tohandle this more cleanly
-                cmd = "rpl -iR {word} {replacement} {path_to_search}".format(word=word, replacement=replacement, path_to_search=os.path.join(path_to_search, intermediate_path, "*.{suffix}".format(suffix=suffix)))
+                # field is actually unset
+                if isinstance(word, bool) or (word is None) or (len(word) == 0):
+                    continue
+                assert isinstance(word, str)
+
+                cmd = ['rpl', '-iR', word, replacement] + files
                 print(cmd)
-                print(os.system(cmd))
+                print(subprocess.run(cmd, check=True))
