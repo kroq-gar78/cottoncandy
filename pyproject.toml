@@ -48,9 +48,14 @@ docs = [
     "sphinx",
     "sphinx-rtd-theme",
 ]
+types = [
+    "boto3-stubs[s3,boto3]<1.36", # match the `boto3` pin for faster resolution
+    "botocore-stubs[botocore]",
+]
 dev = [
     {include-group = "test"},
     {include-group = "docs"},
+    {include-group = "types"},
     "cottoncandy[extra]",
 ]
 
