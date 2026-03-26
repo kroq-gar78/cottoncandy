@@ -1,3 +1,4 @@
+from io import BytesIO
 import os
 import tempfile
 import time
@@ -174,3 +175,45 @@ def test_move(cci, object_name):
         dat = cci.download_raw_array(dest_object_name)
         assert np.allclose(dat, content)
         cci.rm(dest_object_name)
+
+def test_rm_recursive_does_not_delete_extraneous_files(cci, object_name):
+    '''Test that rm(recursive=True) only deletes files within the specified tree'''
+    # Create files under the target tree
+    target_tree = object_name + '/subtree'
+    target_file1 = target_tree + '/file1'
+    target_file2 = target_tree + '/nested/file2'
+
+    # Create files in a separate tree that should NOT be deleted
+    extraneous_tree = object_name + '_extraneous'
+    extraneous_file = extraneous_tree + '/file'
+
+    content1 = b'target content 1'
+    content2 = b'target content 2'
+    extraneous_content = b'extraneous content'
+
+    # Upload all files
+    cci.upload_object(target_file1, BytesIO(content1))
+    cci.upload_object(target_file2, BytesIO(content2))
+    cci.upload_object(extraneous_file, BytesIO(extraneous_content))
+    time.sleep(cci.wait_time)
+
+    # Verify all files exist
+    assert cci.exists_object(target_file1)
+    assert cci.exists_object(target_file2)
+    assert cci.exists_object(extraneous_file)
+
+    # Delete the target tree recursively
+    cci.rm(target_tree, recursive=True)
+    time.sleep(cci.wait_time)
+
+    # Verify target files are deleted
+    assert not cci.exists_object(target_file1)
+    assert not cci.exists_object(target_file2)
+
+    # Verify extraneous file is NOT deleted
+    assert cci.exists_object(extraneous_file)
+    dat = cci.download_object(extraneous_file)
+    assert dat == extraneous_content
+
+    # Clean up
+    cci.rm(extraneous_tree, recursive=True)

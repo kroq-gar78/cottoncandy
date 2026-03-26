@@ -9,7 +9,7 @@ from urllib.parse import unquote
 from warnings import warn
 
 import six
-from typing import Any, Iterable, List, Literal, TypedDict, Optional, Union
+from typing import Any, BinaryIO, Iterable, List, Literal, TypedDict, Optional, Union
 
 import cottoncandy.browser
 from cottoncandy.backend import FileNotFoundError
@@ -29,6 +29,7 @@ from .utils import (
     get_fileobject_size,
     has_magic,
     has_real_magic,
+    has_trivial_magic,
     mk_aws_path,
     objects2names,
     pathjoin,
@@ -284,7 +285,7 @@ class BasicInterface(InterfaceObject):
         self.backend_interface.show_all_buckets()
 
     @clean_object_name
-    def get_object(self, object_name, bucket_name=None):
+    def get_object(self, object_name: str, bucket_name=None):
         """Get a boto3 object. Create it if it doesn't exist"""
         # NOTE: keeping this in case outside code is using this.
         return self.backend_interface.get_s3_object(object_name, bucket_name)
@@ -313,7 +314,7 @@ class BasicInterface(InterfaceObject):
     # CCBackEnd object or the actual cloud APIs
 
     @clean_object_name
-    def upload_object(self, object_name, body, acl=DEFAULT_ACL, threads = THREADS, **metadata):
+    def upload_object(self, object_name: str, body: BinaryIO, acl=DEFAULT_ACL, threads = THREADS, **metadata):
         # First check size of object to see if MPU is necessary
 
         self.backend_interface.upload_stream(body, object_name, metadata, permissions = acl, threads = threads)
@@ -1367,6 +1368,10 @@ class FileSystemInterface(BasicInterface):
         has_objects = len(self.ls(object_name)) > 0
         if has_objects:
             if recursive:
+                if not has_trivial_magic(object_name):
+                    # Don't delete files that share part of the basename of this subtree!
+                    object_name = self.pathjoin(object_name, '*')
+
                 all_objects = self.glob(object_name)
                 print('deleting %i objects...' % len(all_objects))
                 for obname in self.glob(object_name):
