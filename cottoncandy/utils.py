@@ -375,6 +375,7 @@ def mk_aws_path(path: str) -> str:
 ##############################
 
 
+# TODO: TypeVar for NDArray dtype
 def generate_ndarray_chunks(arr: npt.NDArray, axis: Optional[int]=None, buffersize: int=100*MB) -> Iterator[tuple[tuple[int, ...], npt.NDArray]]:
     '''A generator that splits an array into chunks of desired byte size
 
